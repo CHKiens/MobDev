@@ -12,11 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mobdev.model.SalesItem
 import com.example.mobdev.model.SalesItemViewModel
+import com.example.mobdev.screens.SalesItemAdd
 import com.example.mobdev.screens.SalesItemDetails
 import com.example.mobdev.screens.SalesItemList
 import com.example.mobdev.ui.theme.MobDevTheme
@@ -63,25 +66,24 @@ fun MainScreen(
         }
         composable(
             route = NavRoutes.SalesItemDetails.route + "/{salesItemId}",
-            arguments = listOf(navArgument("salesItemId") { })
+            arguments = listOf(navArgument("salesItemId") { type = NavType.IntType})
         ) { backStackEntry ->
-            val salesItemId = backStackEntry.arguments?.getString("salesItemId")?.toInt() ?: 0
-            val salesItem = salesItems.find { it.id == salesItemId }
-            if (salesItem != null) {
-                SalesItemDetails(
-                    salesItem = salesItem,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            } else {
-                Scaffold {
-                    Text(
-                        text = "Sales Item not found",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it)
-                    )
-                }
-            }
+            val salesItemId = backStackEntry.arguments?.getInt("salesItemId")
+            val salesItem = salesItems.find { it.id == salesItemId } ?: SalesItem(
+                description = "Not found",
+                price = 0.0,
+                time = 0
+            )
+            SalesItemDetails(
+                modifier = modifier,
+                salesItem = salesItem,
+                onNavigateBack = { navController.popBackStack() }
+            ) }
+        composable(NavRoutes.SalesItemAdd.route) {
+            SalesItemAdd(
+                modifier = modifier,
+                addSalesItem = { salesItem -> viewModel.add(salesItem) },
+                navigateBack = { navController.popBackStack() })
         }
     }
 }
