@@ -64,7 +64,8 @@ fun SalesItemList (
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add")
+                Icon(
+                    Icons.Filled.Add, contentDescription = "Add")
             }
         })
     { innerPadding ->
@@ -114,16 +115,33 @@ private fun SalesItemListContent(
 
         Row(verticalAlignment = Alignment.CenterVertically)
         {
-            OutlinedTextField(
+            TextField(
                 value = descFragment,
                 onValueChange = {
                     descFragment = it
                 },
-                label = { Text("Filter by description") },
-                modifier = Modifier.weight(1f).padding(end = 8.dp)
+                label = { Text("Filter by description", style = MaterialTheme.typography.bodySmall) },
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically)
+        {
+            TextField(
+                value = maxPrice,
+                onValueChange = {
+                    maxPrice = it
+                },
+                label = { Text("Filter by max price", style = MaterialTheme.typography.bodySmall) },
+                modifier = Modifier.padding(end = 8.dp)
             )
             Button(onClick = {
+                val max = maxPrice.toDoubleOrNull()
                 onFilterSalesItemsByDescription(descFragment)
+                if (maxPrice.isEmpty() || max == null) {
+                    onFilterSalesItemsByMaxPrice(Double.MAX_VALUE)
+                } else {
+                    onFilterSalesItemsByMaxPrice(max)
+                }
             }) {
                 Text("Filter")
             }

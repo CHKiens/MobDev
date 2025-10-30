@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SalesItemRepository {
-    private val baseUrl = "https://anbo-salesitems.azurewebsites.net/api/SalesItems"
+    private val baseUrl = "https://anbo-salesitems.azurewebsites.net/api/"
     private val tag = "SalesItemRepository"
     private val salesItemService: SalesItemService
     val salesItems: MutableState<List<SalesItem>> = mutableStateOf(listOf())
