@@ -104,7 +104,16 @@ class SalesItemRepository {
         }
     }
 
-    fun filterByMaxPrice(maxPrice: String) {
+    fun sortSalesItemsByDescription(ascending: Boolean) {
+        Log.d(tag, "Sort by description")
+        salesItems.value = if (ascending) {
+            salesItems.value.sortedBy { it.description }
+        } else {
+            salesItems.value.sortedByDescending { it.description }
+        }
+    }
+
+    fun filterSalesItemsByMaxPrice(maxPrice: String) {
         if (maxPrice.isEmpty()) {
             getSalesItems()
             return
@@ -113,5 +122,13 @@ class SalesItemRepository {
         if (max != null) {
             salesItems.value = salesItems.value.filter { it.price <= max }
         }
+    }
+
+    fun filterSalesItemsByDescription(keyword: String) {
+        if (keyword.isEmpty()) {
+            getSalesItems()
+            return
+        }
+        salesItems.value = salesItems.value.filter { it.description.contains(keyword, ignoreCase = true) }
     }
 }
