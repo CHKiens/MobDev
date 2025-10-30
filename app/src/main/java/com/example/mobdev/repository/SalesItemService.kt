@@ -2,8 +2,6 @@ package com.example.mobdev.repository
 
 import com.example.mobdev.model.SalesItem
 import retrofit2.Call
-
-
 import retrofit2.http.*
 
 interface SalesItemService {

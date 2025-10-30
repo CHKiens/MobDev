@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SalesItemRepository {
     private val baseUrl = "https://anbo-salesitems.azurewebsites.net/api/SalesItems"
-
+    private val tag = "SalesItemRepository"
     private val salesItemService: SalesItemService
     val salesItems: MutableState<List<SalesItem>> = mutableStateOf(listOf())
     val isLoadingSalesItems = mutableStateOf(false)
@@ -54,49 +54,49 @@ class SalesItemRepository {
         salesItemService.createSalesItem(salesItem).enqueue(object : Callback<SalesItem> {
             override fun onResponse(call: Call<SalesItem>, response: Response<SalesItem>) {
                 if (response.isSuccessful) {
-                    Log.d("APPLE", "Added: " + response.body())
+                    Log.d(tag, "Added: " + response.body())
                     getSalesItems()
                     errorMessage.value = ""
                 } else {
                     val message = response.code().toString() + " " + response.message()
                     errorMessage.value = message
-                    Log.e("APPLE", message)
+                    Log.e(tag, message)
                 }
             }
 
             override fun onFailure(call: Call<SalesItem>, t: Throwable) {
                 val message = t.message ?: "No connection to back-end"
                 errorMessage.value = message
-                Log.e("APPLE", message)
+                Log.e(tag, message)
             }
         })
     }
 
     fun delete(id: Int) {
-        Log.d("APPLE", "Delete: $id")
+        Log.d(tag, "Delete: $id")
         salesItemService.deleteSalesItem(id).enqueue(object : Callback<SalesItem> {
             override fun onResponse(call: Call<SalesItem>, response: Response<SalesItem>) {
                 if (response.isSuccessful) {
-                    Log.d("APPLE", "Delete: " + response.body())
+                    Log.d(tag, "Delete: " + response.body())
                     errorMessage.value = ""
                     getSalesItems()
                 } else {
                     val message = response.code().toString() + " " + response.message()
                     errorMessage.value = message
-                    Log.e("APPLE", "Not deleted: $message")
+                    Log.e(tag, "Not deleted: $message")
                 }
             }
 
             override fun onFailure(call: Call<SalesItem>, t: Throwable) {
                 val message = t.message ?: "No connection to back-end"
                 errorMessage.value = message
-                Log.e("APPLE", "Not deleted $message")
+                Log.e(tag, "Not deleted $message")
             }
         })
     }
 
     fun sortSalesItemsByPrice(ascending: Boolean) {
-        Log.d("APPLE", "Sort by price")
+        Log.d(tag, "Sort by price")
         salesItems.value = if (ascending) {
             salesItems.value.sortedBy { it.price }
         } else {
