@@ -13,8 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -59,13 +62,15 @@ fun SalesItemList (
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.size(80.dp),
                 shape = CircleShape,
                 onClick = { onAdd() },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
-                    Icons.Filled.Add, contentDescription = "Add")
+                    Icons.Filled.PersonOutline, contentDescription = "Account",
+                    modifier = Modifier.fillMaxSize())
             }
         })
     { innerPadding ->
