@@ -12,7 +12,7 @@ val Yellowish = Color(0xFF9E8B6B)
 
 val Background = Color(0xFFE9E9E9)
 
-var OffWhite = Color(0xFFF2F2F2)
+val OffWhite = Color(0xFFF2F2F2)
 
 val TextPrimary = Color(0xFF3D3D3D)
 val TextSecondary = Color(0xFF777777)

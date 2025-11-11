@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,12 +77,12 @@ fun Register(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "Register", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Register here", style = MaterialTheme.typography.bodyLarge)
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text("Email", color = MaterialTheme.colorScheme.secondary) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
@@ -89,13 +90,16 @@ fun Register(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text("Password", color = MaterialTheme.colorScheme.secondary) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
 
             Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                ),
                 onClick = {
                     Firebase.auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
@@ -113,7 +117,7 @@ fun Register(
                 },
                 modifier = Modifier.fillMaxWidth(0.8f)
             ) {
-                Text("Register")
+                Text("Register", color = MaterialTheme.colorScheme.primary)
             }
 
             Spacer(modifier = Modifier.height(8.dp))

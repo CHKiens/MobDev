@@ -54,12 +54,12 @@ fun Login(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "Login", style = MaterialTheme.typography.bodyLarge)
+            Text(text = "Login to your account", style = MaterialTheme.typography.bodyLarge)
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text("Email", color = MaterialTheme.colorScheme.secondary) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
@@ -67,13 +67,16 @@ fun Login(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text("Password", color = MaterialTheme.colorScheme.secondary) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
 
             Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                ),
                 onClick = {
                     Firebase.auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
@@ -91,7 +94,7 @@ fun Login(
                 },
                 modifier = Modifier.fillMaxWidth(0.8f)
             ) {
-                Text("Login")
+                Text("Login", color = MaterialTheme.colorScheme.primary)
             }
 
             Spacer(modifier = Modifier.height(8.dp))

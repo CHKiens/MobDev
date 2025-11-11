@@ -3,6 +3,7 @@ package com.example.mobdev.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mobdev.model.SalesItem
+import com.example.mobdev.ui.theme.MobDevTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +48,7 @@ fun SalesItemAdd (
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = { Text("Add Sales Item") },
@@ -69,13 +71,13 @@ fun SalesItemAdd (
                     isError = descError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Description") })
+                    label = { Text("Description",color = MaterialTheme.colorScheme.secondary) })
                 OutlinedTextField(onValueChange = { price = it },
                     value = price,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     isError = priceError,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Price") })
+                    label = { Text(text = "Price", color = MaterialTheme.colorScheme.secondary) })
             } else {
                 Row(
                     modifier = modifier.fillMaxWidth(),
@@ -86,23 +88,21 @@ fun SalesItemAdd (
                         isError = descError,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         modifier = Modifier.weight(1f),
-                        label = { Text(text = "Description") })
+                        label = { Text(text = "Description", color = MaterialTheme.colorScheme.secondary) })
                     OutlinedTextField(onValueChange = { price = it },
                         value = price,
                         // https://medium.com/@GkhKaya00/exploring-keyboard-types-in-kotlin-jetpack-compose-ca1f617e1109
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         isError = priceError,
                         modifier = Modifier.weight(1f),
-                        label = { Text(text = "Price") })
+                        label = { Text(text = "Price", color = MaterialTheme.colorScheme.secondary) })
                 }
             }
+            Spacer(modifier = Modifier.padding(8.dp))
             Row(
                 modifier = modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { navigateBack() }) {
-                    Text("Back")
-                }
                 Button(onClick = {
                     if (description.isEmpty()) {
                         descError = true
@@ -131,5 +131,8 @@ fun SalesItemAdd (
 @Preview
 @Composable
 fun SalesItemAddPreview() {
-    SalesItemAdd()
+    MobDevTheme {
+        SalesItemAdd()
+    }
+
 }
