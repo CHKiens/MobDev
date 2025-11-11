@@ -56,7 +56,7 @@ fun SalesItemList (
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                title = { Text("Sales Items") }
+                title = { Text("Sales Items") },
             )
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -226,7 +226,7 @@ fun SalesItemsListPreview() {
             SalesItem(id = 2, description = "Item 2", price = 20.0, time = 1625241600),
             SalesItem(id = 3, description = "Item 3", price = 15.0, time = 1625328000)
         ),
-        errorMessage = "Some error message",
+        errorMessage = "error message",
         isLoading = false
     )
 }

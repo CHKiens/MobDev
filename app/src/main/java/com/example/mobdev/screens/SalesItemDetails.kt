@@ -32,6 +32,11 @@ import java.util.Date
 import java.util.Locale
 import android.content.res.Configuration
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +44,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 fun SalesItemDetails (
     salesItem: SalesItem,
     modifier: Modifier = Modifier,
-    onNavigateBack : () -> Unit = {}
+    navigateBack : () -> Unit = {}
 ){
     val description = salesItem.description
     val price = salesItem.price
@@ -52,7 +57,18 @@ fun SalesItemDetails (
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                title = { Text("Sales Item Details") })
+                title = { Text("Sales Item Details") },
+                navigationIcon = {
+                    IconButton(onClick = { navigateBack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+
+            )
+
         }
     ){
         Column(modifier = Modifier.padding(it).padding(24.dp)) {

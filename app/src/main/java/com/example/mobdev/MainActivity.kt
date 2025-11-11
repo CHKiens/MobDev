@@ -19,15 +19,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mobdev.model.SalesItem
 import com.example.mobdev.model.SalesItemViewModel
+import com.example.mobdev.screens.Login
+import com.example.mobdev.screens.Register
 import com.example.mobdev.screens.SalesItemAdd
 import com.example.mobdev.screens.SalesItemDetails
 import com.example.mobdev.screens.SalesItemList
+import com.example.mobdev.screens.UserScreen
 import com.example.mobdev.ui.theme.MobDevTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
         setContent {
             MobDevTheme {
                 MainScreen()
@@ -77,13 +82,33 @@ fun MainScreen(
             SalesItemDetails(
                 modifier = modifier,
                 salesItem = salesItem,
-                onNavigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() }
             ) }
         composable(NavRoutes.SalesItemAdd.route) {
             SalesItemAdd(
                 modifier = modifier,
                 addSalesItem = { salesItem -> viewModel.add(salesItem) },
                 navigateBack = { navController.popBackStack() })
+        }
+        composable (NavRoutes.UserScreen.route){
+            UserScreen(
+                modifier = modifier,
+                navigateBack = { navController.popBackStack() }
+
+            )
+        }
+        composable (NavRoutes.Register.route){
+            Register(
+                modifier = modifier,
+                navigateBack = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(NavRoutes.Login.route) }
+            )
+        }
+        composable (NavRoutes.Login.route){
+            Login(
+                modifier = modifier,
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
