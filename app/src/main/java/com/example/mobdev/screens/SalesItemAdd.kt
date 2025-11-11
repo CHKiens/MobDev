@@ -85,6 +85,8 @@ fun SalesItemAdd(
                     priceError = price.toIntOrNull() == null
                     if (descError || priceError) return@Button
 
+                    val currentTimeInMillis = System.currentTimeMillis()
+                    val currentTimeInSeconds = (currentTimeInMillis / 1000).toInt()
                     val newItem = SalesItem(
                         id = 0,
                         description = description,
@@ -92,7 +94,7 @@ fun SalesItemAdd(
                         sellerEmail = currentUserEmail,
                         sellerPhone = "",
                         pictureUrl = "",
-                        time = 0
+                        time = currentTimeInSeconds
                     )
                     addSalesItem(newItem)
                     navigateBack()
