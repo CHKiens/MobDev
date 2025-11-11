@@ -15,10 +15,10 @@ import com.example.mobdev.model.SalesItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesItemAdd(
+    modifier: Modifier = Modifier,
     currentUserEmail: String?,
     addSalesItem: (SalesItem) -> Unit = {},
-    navigateBack: () -> Unit = {},
-    modifier: Modifier = Modifier
+    navigateBack: () -> Unit = {}
 ) {
     var description by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }

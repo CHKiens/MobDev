@@ -27,9 +27,9 @@ import com.google.android.gms.common.api.ApiException
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
+    modifier: Modifier = Modifier,
     navController: NavController,
     authViewModel: AuthViewModel = viewModel(),
-    modifier: Modifier = Modifier,
     navigateBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
