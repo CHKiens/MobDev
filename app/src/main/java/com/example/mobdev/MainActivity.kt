@@ -11,16 +11,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mobdev.auth.AuthViewModel
 import com.example.mobdev.model.SalesItem
 import com.example.mobdev.model.SalesItemViewModel
-import com.example.mobdev.screens.Login
-import com.example.mobdev.screens.Register
 import com.example.mobdev.screens.SalesItemAdd
 import com.example.mobdev.screens.SalesItemDetails
 import com.example.mobdev.screens.SalesItemList
@@ -45,68 +47,58 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    viewModel: SalesItemViewModel = viewModel()
+    salesViewModel: SalesItemViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel()
 ) {
     val navController = rememberNavController()
-    val salesItems = viewModel.salesItems.value
-    val errorMessage = viewModel.errorMessage.value
+    val salesItems = salesViewModel.salesItems.value
+    val errorMessage = salesViewModel.errorMessage.value
+    val currentUserEmail = authViewModel.user.value?.email
 
     NavHost(navController = navController, startDestination = NavRoutes.SalesItemList.route) {
+
         composable(NavRoutes.SalesItemList.route) {
             SalesItemList(
-                modifier = modifier,
                 salesItems = salesItems,
-                onSalesItemsReload = { viewModel.getSalesItems() },
-                onSalesItemSelected =
-                    { salesItem ->
-                        navController.navigate(NavRoutes.SalesItemDetails.route + "/${salesItem.id}") },
-                onSalesItemDeleted = { salesItem -> viewModel.delete(salesItem) },
-                sortByPrice = { up -> viewModel.sortByPrice(up) },
-                sortByDescription = { up -> viewModel.sortByDescription(up) },
-                filterByMaxPrice = { maxPrice -> viewModel.filterByMaxPrice(maxPrice.toString()) },
-                filterByDescription = { keyword -> viewModel.filterByDescription(keyword) },
-                isLoading = viewModel.isLoadingSalesItems.value,
-                errorMessage = errorMessage
+                currentUserEmail = currentUserEmail,
+                isLoading = salesViewModel.isLoadingSalesItems.value,
+                onSalesItemSelected = { item ->
+                    navController.navigate("${NavRoutes.SalesItemDetails.route}/${item.id}")
+                },
+                onSalesItemDeleted = { salesViewModel.delete(it) },
+                onSalesItemsReload = { salesViewModel.getSalesItems() },
+                sortByPrice = { up -> salesViewModel.sortByPrice(up) },
+                sortByDescription = { up -> salesViewModel.sortByDescription(up) },
+                filterByMaxPrice = { max -> salesViewModel.filterByMaxPrice(max.toString()) },
+                filterByDescription = { keyword -> salesViewModel.filterByDescription(keyword) },
+                errorMessage = errorMessage,
+                onAccountClick = { navController.navigate(NavRoutes.UserScreen.route) }
             )
         }
+
         composable(
-            route = NavRoutes.SalesItemDetails.route + "/{salesItemId}",
-            arguments = listOf(navArgument("salesItemId") { type = NavType.IntType})
+            route = "${NavRoutes.SalesItemDetails.route}/{salesItemId}",
+            arguments = listOf(navArgument("salesItemId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val salesItemId = backStackEntry.arguments?.getInt("salesItemId")
-            val salesItem = salesItems.find { it.id == salesItemId } ?: SalesItem(
-                description = "Not found",
-                price = 0.0,
-                time = 0
-            )
+            val id = backStackEntry.arguments?.getInt("salesItemId")
+            val item = salesItems.find { it.id == id } ?: SalesItem(description = "Not found", price =  0)
             SalesItemDetails(
-                modifier = modifier,
-                salesItem = salesItem,
+                salesItem = item,
                 navigateBack = { navController.popBackStack() }
-            ) }
+            )
+        }
+
+        composable(NavRoutes.UserScreen.route) {
+            UserScreen(
+                navController = navController,
+                navigateBack = { navController.popBackStack() }
+            )
+        }
+
         composable(NavRoutes.SalesItemAdd.route) {
             SalesItemAdd(
-                modifier = modifier,
-                addSalesItem = { salesItem -> viewModel.add(salesItem) },
-                navigateBack = { navController.popBackStack() })
-        }
-        composable (NavRoutes.UserScreen.route){
-            UserScreen(
-                modifier = modifier,
-                navigateBack = { navController.popBackStack() }
-
-            )
-        }
-        composable (NavRoutes.Register.route){
-            Register(
-                modifier = modifier,
-                navigateBack = { navController.popBackStack() },
-                onNavigateToLogin = { navController.navigate(NavRoutes.Login.route) }
-            )
-        }
-        composable (NavRoutes.Login.route){
-            Login(
-                modifier = modifier,
+                currentUserEmail = currentUserEmail,
+                addSalesItem = { salesViewModel.add(it) },
                 navigateBack = { navController.popBackStack() }
             )
         }

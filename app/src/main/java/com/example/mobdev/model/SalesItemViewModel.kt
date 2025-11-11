@@ -3,13 +3,12 @@ package com.example.mobdev.model
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import com.example.mobdev.repository.SalesItemRepository
-import kotlinx.coroutines.flow.StateFlow
 
-class SalesItemViewModel : ViewModel(){
+class SalesItemViewModel : ViewModel() {
     private val repository = SalesItemRepository()
-    val salesItems: State<List<SalesItem>> = repository.salesItems
-    val errorMessage: State<String> = repository.errorMessage
-    val isLoadingSalesItems: State<Boolean> = repository.isLoadingSalesItems
+    val salesItems: State<List<SalesItem>> get() = repository.salesItems
+    val errorMessage: State<String> get() = repository.errorMessage
+    val isLoadingSalesItems: State<Boolean> get() = repository.isLoadingSalesItems
 
     fun getSalesItems() {
         repository.getSalesItems()
@@ -38,6 +37,4 @@ class SalesItemViewModel : ViewModel(){
     fun filterByDescription(keyword: String) {
         repository.filterSalesItemsByDescription(keyword)
     }
-
-
 }
