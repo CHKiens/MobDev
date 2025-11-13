@@ -127,6 +127,7 @@ fun SalesItemList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SalesItemListContent(
     modifier: Modifier = Modifier,
@@ -308,13 +309,23 @@ fun SalesItemCard(
 
             if (salesItem.sellerEmail == currentUserEmail) {
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Remove ${salesItem.description}",
-                    modifier = Modifier
-                        .padding(36.dp)
-                        .clickable { onSalesItemDeleted(salesItem) }
+                Button(
+                    onClick = {
+                        onSalesItemDeleted(salesItem)
+                    },
+                    modifier = Modifier.padding(top = 34.dp).padding(end = 16.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
                 )
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Remove ${salesItem.description}"
+                    )
+                }
+
             }
         }
     }

@@ -16,6 +16,15 @@ import android.widget.Toast
 import androidx.compose.runtime.saveable.rememberSaveable
 import java.net.URL
 
+fun isValidUrl(url: String): Boolean {
+    if (url.isBlank()) return true
+    return try {
+        URL(url).toURI()
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +92,7 @@ fun SalesItemAdd(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
 
-            )
+                )
             if (priceError) {
                 Text("Enter a valid number", color = MaterialTheme.colorScheme.error)
             }
@@ -105,7 +114,8 @@ fun SalesItemAdd(
                 onClick = {
                     descError = description.isBlank()
                     priceError = price.toIntOrNull() == null
-                    if (descError || priceError) return@Button
+                    imgError = !isValidUrl(img)
+                    if (descError || priceError || imgError) return@Button
 
                     val currentTimeInMillis = System.currentTimeMillis()
                     val currentTimeInSeconds = (currentTimeInMillis / 1000)
