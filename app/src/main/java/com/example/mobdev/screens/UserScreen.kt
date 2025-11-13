@@ -4,22 +4,36 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mobdev.NavRoutes
-import com.example.mobdev.auth.AuthViewModel
 import com.example.mobdev.R
-import com.example.mobdev.ui.theme.MobDevTheme
+import com.example.mobdev.auth.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -29,14 +43,13 @@ import com.google.android.gms.common.api.ApiException
 fun UserScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authViewModel: AuthViewModel = viewModel(),
+    authViewModel: AuthViewModel,
     navigateBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val activity = context as Activity
     val currentUser by authViewModel.user.observeAsState()
     val errorMessage by authViewModel.errorMessage.observeAsState()
-    
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -50,7 +63,11 @@ fun UserScreen(
                 Toast.makeText(context, "Google sign in failed", Toast.LENGTH_SHORT).show()
             }
         } catch (e: ApiException) {
-            Toast.makeText(context, "Google sign in failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Google sign in failed: ${e.localizedMessage}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

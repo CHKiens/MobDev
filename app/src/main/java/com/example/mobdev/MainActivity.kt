@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
@@ -53,7 +55,8 @@ fun MainScreen(
     val navController = rememberNavController()
     val salesItems = salesViewModel.salesItems.value
     val errorMessage = salesViewModel.errorMessage.value
-    val currentUserEmail = authViewModel.user.value?.email
+    val currentUser by authViewModel.user.observeAsState()
+    val currentUserEmail = currentUser?.email
 
     NavHost(navController = navController, startDestination = NavRoutes.SalesItemList.route) {
 
@@ -93,6 +96,7 @@ fun MainScreen(
         composable(NavRoutes.UserScreen.route) {
             UserScreen(
                 navController = navController,
+                authViewModel = authViewModel,
                 navigateBack = { navController.popBackStack() }
             )
         }
@@ -104,13 +108,5 @@ fun MainScreen(
                 navigateBack = { navController.popBackStack() }
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    MobDevTheme {
-        MainScreen()
     }
 }

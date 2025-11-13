@@ -5,23 +5,47 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,12 +53,11 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.mobdev.model.SalesItem
@@ -58,10 +81,8 @@ fun SalesItemList(
     filterByMaxPrice: (maxPrice: Int?) -> Unit = {},
     filterByDescription: (String) -> Unit = {},
     errorMessage: String = "",
-    onAccountClick : () -> Unit = {},
-)
-
-{
+    onAccountClick: () -> Unit = {},
+) {
     val orientation = LocalConfiguration.current.orientation
     val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
     Scaffold(
@@ -78,17 +99,22 @@ fun SalesItemList(
                     actions = {
                         IconButton(
                             onClick = onAccountClick,
-                            modifier = Modifier
-                                .padding(24.dp)
-                                .size(36.dp)
-                                .background(MaterialTheme.colorScheme.secondary, CircleShape)
+                            modifier = Modifier.padding(end = 8.dp)
                         ) {
-                            Icon(
-                                Icons.Filled.PersonOutline,
-                                contentDescription = "Account",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.secondary),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.PersonOutline,
+                                    contentDescription = "Account",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         }
 
                     }
@@ -99,15 +125,20 @@ fun SalesItemList(
         floatingActionButton = {
             if (isLandscape) {
                 FloatingActionButton(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier
+                        .safeDrawingPadding()
+                        .padding(16.dp)
+                        .size(80.dp),
                     shape = CircleShape,
                     onClick = onAccountClick,
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(Icons.Filled.PersonOutline,
+                    Icon(
+                        Icons.Filled.PersonOutline,
                         contentDescription = "Account",
-                        modifier = Modifier.fillMaxSize())
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
@@ -182,9 +213,9 @@ private fun SalesItemListContent(
                     containerColor = MaterialTheme.colorScheme.primary,
                 ),
                 onClick = {
-                sortByDescription(sortDescAscending)
-                sortDescAscending = !sortDescAscending
-            }) { 
+                    sortByDescription(sortDescAscending)
+                    sortDescAscending = !sortDescAscending
+                }) { 
                 Text(if (sortDescAscending) "Description ↑" else "Description ↓")
             }
 
@@ -193,9 +224,9 @@ private fun SalesItemListContent(
                     containerColor = MaterialTheme.colorScheme.primary,
                 ),
                 onClick = {
-                sortByPrice(sortPriceAscending)
-                sortPriceAscending = !sortPriceAscending
-            }) { 
+                    sortByPrice(sortPriceAscending)
+                    sortPriceAscending = !sortPriceAscending
+                }) { 
                 Text(if (sortPriceAscending) "Price ↑" else "Price ↓")
             }
             Spacer(Modifier.weight(1f))
@@ -289,7 +320,9 @@ fun SalesItemCard(
 
             Column(Modifier.padding(top = 16.dp)) {
                 Text(
-                    modifier = Modifier.width(150.dp).padding(bottom = 2.dp),
+                    modifier = Modifier
+                        .width(150.dp)
+                        .padding(bottom = 2.dp),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
@@ -315,7 +348,9 @@ fun SalesItemCard(
                     onClick = {
                         onSalesItemDeleted(salesItem)
                     },
-                    modifier = Modifier.padding(top = 34.dp).padding(end = 16.dp),
+                    modifier = Modifier
+                        .padding(top = 34.dp)
+                        .padding(end = 16.dp),
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.primary

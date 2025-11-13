@@ -14,19 +14,27 @@ class SalesItemRepository {
     private val tag = "SalesItemRepository"
     private val salesItemService: SalesItemService
 
+    private var _salesItems = listOf<SalesItem>()
+
     val salesItems: MutableState<List<SalesItem>> = mutableStateOf(listOf())
     val isLoadingSalesItems = mutableStateOf(false)
     val errorMessage = mutableStateOf("")
+
+    private var keywordFilter = ""
+    private var maxPriceFilter: Int? = null
+    private var currentSort: Sort = Sort.None
+
+    private sealed class Sort {
+        object None : Sort()
+        data class ByPrice(val ascending: Boolean) : Sort()
+        data class ByDescription(val ascending: Boolean) : Sort()
+    }
 
     init {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
-
+        val client = OkHttpClient.Builder().addInterceptor(logging).build()
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(client)
@@ -40,19 +48,16 @@ class SalesItemRepository {
     fun getSalesItems() {
         Log.d(tag, "Getting sales items from API")
         isLoadingSalesItems.value = true
-
         salesItemService.getAllSalesItems().enqueue(object : Callback<List<SalesItem>> {
             override fun onResponse(call: Call<List<SalesItem>>, response: Response<List<SalesItem>>) {
                 isLoadingSalesItems.value = false
                 if (response.isSuccessful) {
-                    val items = response.body()
-                    if (items != null) {
-                        salesItems.value = items
+                    response.body()?.let {
+                        _salesItems = it
+                        applyFiltersAndSorts()
                         errorMessage.value = ""
-                        Log.d(tag, "Loaded ${items.size} items successfully")
-                    } else {
-                        handleError("Empty response body", response.code())
-                    }
+                        Log.d(tag, "Loaded ${it.size} items successfully")
+                    } ?: handleError("Empty response body", response.code())
                 } else {
                     handleError("HTTP ${response.code()} ${response.message()}", response.code())
                 }
@@ -70,7 +75,6 @@ class SalesItemRepository {
             override fun onResponse(call: Call<SalesItem>, response: Response<SalesItem>) {
                 if (response.isSuccessful) {
                     Log.d(tag, "Added: ${response.body()}")
-                    errorMessage.value = ""
                     getSalesItems()
                 } else {
                     handleError("Failed to add item: ${response.message()}", response.code())
@@ -89,7 +93,6 @@ class SalesItemRepository {
             override fun onResponse(call: Call<SalesItem>, response: Response<SalesItem>) {
                 if (response.isSuccessful) {
                     Log.d(tag, "Deleted item: ${response.body()}")
-                    errorMessage.value = ""
                     getSalesItems()
                 } else {
                     handleError("Failed to delete item: ${response.message()}", response.code())
@@ -103,46 +106,52 @@ class SalesItemRepository {
     }
 
     fun filterSalesItemsByMaxPrice(maxPrice: String) {
-        Log.d(tag, "Filtering by max price: $maxPrice")
-        if (maxPrice.isEmpty()) {
-            getSalesItems()
-            return
-        }
-        val max = maxPrice.toIntOrNull()
-        if (max != null) {
-            salesItems.value = salesItems.value.filter { it.price <= max }
-        } else {
-            handleError("Invalid number format for max price: $maxPrice")
-        }
+        Log.d(tag, "Setting max price filter: $maxPrice")
+        maxPriceFilter = maxPrice.toIntOrNull()
+        applyFiltersAndSorts()
     }
 
     fun filterSalesItemsByDescription(keyword: String) {
-        Log.d(tag, "Filtering by description: \"$keyword\"")
-        if (keyword.isEmpty()) {
-            getSalesItems()
-            return
-        }
-        salesItems.value = salesItems.value.filter {
-            it.description.contains(keyword, ignoreCase = true)
-        }
+        Log.d(tag, "Setting description filter: \"$keyword\"")
+        keywordFilter = keyword
+        applyFiltersAndSorts()
     }
 
     fun sortSalesItemsByPrice(ascending: Boolean) {
-        Log.d(tag, "Sorting by price, ascending: $ascending")
-        salesItems.value = if (ascending) {
-            salesItems.value.sortedBy { it.price }
-        } else {
-            salesItems.value.sortedByDescending { it.price }
-        }
+        Log.d(tag, "Setting sort by price, ascending: $ascending")
+        currentSort = Sort.ByPrice(ascending)
+        applyFiltersAndSorts()
     }
 
     fun sortSalesItemsByDescription(ascending: Boolean) {
-        Log.d(tag, "Sorting by description, ascending: $ascending")
-        salesItems.value = if (ascending) {
-            salesItems.value.sortedBy { it.description }
-        } else {
-            salesItems.value.sortedByDescending { it.description }
+        Log.d(tag, "Setting sort by description, ascending: $ascending")
+        currentSort = Sort.ByDescription(ascending)
+        applyFiltersAndSorts()
+    }
+
+    private fun applyFiltersAndSorts() {
+        var processedList = _salesItems
+
+        maxPriceFilter?.let { max ->
+            processedList = processedList.filter { it.price <= max }
         }
+
+        if (keywordFilter.isNotBlank()) {
+            processedList = processedList.filter { it.description.contains(keywordFilter, ignoreCase = true) }
+        }
+
+        processedList = when (val sort = currentSort) {
+            is Sort.ByPrice -> {
+                if (sort.ascending) processedList.sortedBy { it.price }
+                else processedList.sortedByDescending { it.price }
+            }
+            is Sort.ByDescription -> {
+                if (sort.ascending) processedList.sortedBy { it.description }
+                else processedList.sortedByDescending { it.description }
+            }
+            Sort.None -> processedList
+        }
+        salesItems.value = processedList
     }
 
     private fun handleError(message: String, code: Int? = null) {
