@@ -31,15 +31,27 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import coil.compose.rememberAsyncImagePainter
+import java.net.URL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +61,8 @@ fun SalesItemDetails (
     onSalesItemDeleted : (SalesItem) -> Unit = {},
     currentUserEmail : String? = null,
     navigateBack : () -> Unit = {}
-){
+)
+{
     val description = salesItem.description
     val price = salesItem.price
     Scaffold (modifier = modifier.fillMaxSize(),
@@ -74,47 +87,182 @@ fun SalesItemDetails (
             )
 
         }
-    ){
-        Column(modifier = Modifier.padding(it).padding(24.dp)) {
-            Text(description, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-            Text("Created at: ${getDateTimeFromUnix(salesItem.time)}", style = MaterialTheme.typography.bodySmall)
-            val brush = Brush.verticalGradient(
-                colors = listOf(Blueish, Yellowish)
-            )
-            Box(
-                Modifier
-                    .size(350.dp),
-                contentAlignment = Alignment.Center
+    )
+    {
+
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+        val brush = Brush.verticalGradient(
+            colors = listOf(Blueish, Yellowish)
+        )
+
+        if (isLandscape) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.padding(it).padding(24.dp),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.Top
             ) {
-                Canvas(
+                Box(
                     modifier = Modifier
-                        .padding(12.dp)
-                        .size(350.dp),
-                    onDraw = {
-                        drawRoundRect(brush, cornerRadius = CornerRadius(16f, 16f))
+                        .weight(0.5f)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val cornerRadius = 16.dp
+                    val boxSize = 350.dp
+
+                    if (isValidUrl(salesItem.pictureUrl)) {
+                        Image(
+                            painter = rememberAsyncImagePainter(salesItem.pictureUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(boxSize)
+                                .clip(RoundedCornerShape(cornerRadius))
+                        )
+                    } else {
+                        Canvas(
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(boxSize)
+                                .clip(RoundedCornerShape(cornerRadius))
+                        ) {
+                            drawRoundRect(
+                                brush = brush,
+                                cornerRadius = CornerRadius(16f, 16f)
+                            )
+                        }
                     }
-                )
-            }
-            Text("Price: $price", style = MaterialTheme.typography.bodyLarge)
-            Text("Seller Email: ${salesItem.sellerEmail}", style = MaterialTheme.typography.bodySmall)
-            Text("Seller Phone: ${salesItem.sellerPhone}", style = MaterialTheme.typography.bodySmall)
-            if (salesItem.sellerEmail == currentUserEmail) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Remove ${salesItem.description}",
+                }
+
+                Column(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .clickable {
+                        .weight(0.5f)
+                        .fillMaxHeight()
+                        .padding(start = 8.dp)
+                ) {
+                    Text(description, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                    Text("Created at: ${getDateTimeFromUnix(salesItem.time)}", style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("Price: $price", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(bottom = 16.dp))
+                    Text("Seller Email:", style = MaterialTheme.typography.bodySmall)
+                    Text(salesItem.sellerEmail, style = MaterialTheme.typography.bodySmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Seller Phone:", style = MaterialTheme.typography.bodySmall)
+                    Text(salesItem.sellerPhone, style = MaterialTheme.typography.bodySmall)
+                    if (salesItem.sellerEmail == currentUserEmail) {
+                        Button(
+                            onClick = {
+                                onSalesItemDeleted(salesItem)
+                                navigateBack()
+                            },
+                            modifier = Modifier.padding(top = 16.dp),
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = "Remove ${salesItem.description}"
+                            )
+                            Text(
+                                "Delete Item",
+                                modifier = Modifier.padding(start = 8.dp),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary)
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            Column(modifier = Modifier.padding(it).padding(24.dp)) {
+                Text(description, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                Text("Created at: ${getDateTimeFromUnix(salesItem.time)}", style = MaterialTheme.typography.bodySmall)
+                Box(
+                    Modifier
+                        .size(350.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val cornerRadius = 16.dp
+                    val boxSize = 350.dp
+
+                    if (isValidUrl(salesItem.pictureUrl)) {
+                        Image(
+                            painter = rememberAsyncImagePainter(salesItem.pictureUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(boxSize)
+                                .clip(RoundedCornerShape(cornerRadius))
+                        )
+                    } else {
+                        Canvas(
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .size(boxSize)
+                                .clip(RoundedCornerShape(cornerRadius))
+                        ) {
+                            drawRoundRect(
+                                brush = brush,
+                                cornerRadius = CornerRadius(16f, 16f)
+                            )
+                        }
+                    }
+                }
+                Text("Price: $price", style = MaterialTheme.typography.bodyLarge)
+                Text("Seller Email: ${salesItem.sellerEmail}", style = MaterialTheme.typography.bodySmall)
+                Text("Seller Phone: ${salesItem.sellerPhone}", style = MaterialTheme.typography.bodySmall)
+                if (salesItem.sellerEmail == currentUserEmail) {
+                    Button(
+                        onClick = {
                             onSalesItemDeleted(salesItem)
                             navigateBack()
-                        }
-                )
+                        },
+                        modifier = Modifier.padding(top = 16.dp),
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Remove ${salesItem.description}"
+                        )
+                        Text(
+                            "Delete Item",
+                            modifier = Modifier.padding(start = 8.dp),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                }
             }
         }
     }
 }
+
+
 fun getDateTimeFromUnix(seconds: Long): String {
     val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     val netDate = Date(seconds * 1000L)
     return sdf.format(netDate)
 }
+
+
+fun isValidUrl(url: String?): Boolean {
+    if (url.isNullOrBlank()) return false
+    return try {
+        URL(url)
+        true
+    } catch (e: Exception) {
+        false
+    }
+}
+

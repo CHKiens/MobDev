@@ -59,6 +59,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.credentials)

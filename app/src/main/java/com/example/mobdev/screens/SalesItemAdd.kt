@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import com.example.mobdev.auth.AuthViewModel
 import com.example.mobdev.model.SalesItem
 import android.widget.Toast
+import androidx.compose.runtime.saveable.rememberSaveable
+import java.net.URL
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,10 +25,12 @@ fun SalesItemAdd(
     addSalesItem: (SalesItem) -> Unit = {},
     navigateBack: () -> Unit = {}
 ) {
-    var description by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var descError by remember { mutableStateOf(false) }
-    var priceError by remember { mutableStateOf(false) }
+    var description by rememberSaveable { mutableStateOf("") }
+    var price by rememberSaveable { mutableStateOf("") }
+    var img by rememberSaveable { mutableStateOf("") }
+    var descError by rememberSaveable { mutableStateOf(false) }
+    var priceError by rememberSaveable { mutableStateOf(false) }
+    var imgError by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     Scaffold(
@@ -77,10 +81,24 @@ fun SalesItemAdd(
                 isError = priceError,
                 label = { Text("Price", color = MaterialTheme.colorScheme.secondary) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+
             )
             if (priceError) {
                 Text("Enter a valid number", color = MaterialTheme.colorScheme.error)
+            }
+
+            OutlinedTextField(
+                value = img,
+                onValueChange = { img = it },
+                isError = imgError,
+                label = { Text("Image URL", color = MaterialTheme.colorScheme.secondary) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            if (imgError) {
+                Text("Enter a valid URL", color = MaterialTheme.colorScheme.error)
             }
 
             Button(
@@ -97,7 +115,7 @@ fun SalesItemAdd(
                         price = price.toInt(),
                         sellerEmail = currentUserEmail,
                         sellerPhone = "88888888",
-                        pictureUrl = "",
+                        pictureUrl = if(isValidUrl(img)) img else "",
                         time = currentTimeInSeconds
                     )
                     try {
@@ -111,7 +129,7 @@ fun SalesItemAdd(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
             ) {
-                Text("Add Sales Item", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Add Sales Item", color = MaterialTheme.colorScheme.primary)
             }
         }
     }

@@ -127,6 +127,24 @@ class SalesItemRepository {
         }
     }
 
+    fun sortSalesItemsByPrice(ascending: Boolean) {
+        Log.d(tag, "Sorting by price, ascending: $ascending")
+        salesItems.value = if (ascending) {
+            salesItems.value.sortedBy { it.price }
+        } else {
+            salesItems.value.sortedByDescending { it.price }
+        }
+    }
+
+    fun sortSalesItemsByDescription(ascending: Boolean) {
+        Log.d(tag, "Sorting by description, ascending: $ascending")
+        salesItems.value = if (ascending) {
+            salesItems.value.sortedBy { it.description }
+        } else {
+            salesItems.value.sortedByDescending { it.description }
+        }
+    }
+
     private fun handleError(message: String, code: Int? = null) {
         val fullMessage = if (code != null) "$message (Code $code)" else message
         errorMessage.value = fullMessage

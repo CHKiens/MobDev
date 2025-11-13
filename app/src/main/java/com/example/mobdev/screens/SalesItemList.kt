@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
@@ -27,10 +28,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.mobdev.model.SalesItem
 import com.example.mobdev.ui.theme.Blueish
 import com.example.mobdev.ui.theme.Yellowish
@@ -241,8 +247,7 @@ fun SalesItemCard(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.Start
         ) {
             val brush = Brush.verticalGradient(
                 colors = listOf(Blueish, Yellowish)
@@ -251,23 +256,52 @@ fun SalesItemCard(
                 Modifier
                     .size(120.dp),
             ) {
-                Canvas(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .size(120.dp),
+                val cornerRadius = 8.dp
+                val boxSize = 100.dp
 
-                    onDraw = {
-                        drawRoundRect(brush, cornerRadius = CornerRadius(16f, 16f))
+                if (isValidUrl(salesItem.pictureUrl)) {
+                    Image(
+                        painter = rememberAsyncImagePainter(salesItem.pictureUrl),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(boxSize)
+                            .clip(RoundedCornerShape(cornerRadius))
+                    )
+                } else {
+                    Canvas(
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(boxSize)
+                            .clip(RoundedCornerShape(cornerRadius))
+                    ) {
+                        drawRoundRect(
+                            brush = brush,
+                            cornerRadius = CornerRadius(16f, 16f)
+                        )
                     }
-                )
+                }
             }
 
-            Column(){
+            Column(Modifier.padding(top = 16.dp)) {
                 Text(
-                    text = salesItem.description
+                    modifier = Modifier.width(150.dp).padding(bottom = 2.dp),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    text = salesItem.description,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                 )
                 Text(
                     text = "${salesItem.price} DKK",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = getDateTimeFromUnix(salesItem.time),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
