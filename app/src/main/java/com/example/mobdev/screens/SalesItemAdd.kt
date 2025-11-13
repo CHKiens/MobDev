@@ -60,7 +60,7 @@ fun SalesItemAdd(
                 value = description,
                 onValueChange = { description = it },
                 isError = descError,
-                label = { Text("Description") },
+                label = { Text("Description", color = MaterialTheme.colorScheme.secondary) },
                 modifier = Modifier.fillMaxWidth()
             )
             if (descError) {
@@ -71,7 +71,7 @@ fun SalesItemAdd(
                 value = price,
                 onValueChange = { price = it },
                 isError = priceError,
-                label = { Text("Price") },
+                label = { Text("Price", color = MaterialTheme.colorScheme.secondary) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -86,13 +86,13 @@ fun SalesItemAdd(
                     if (descError || priceError) return@Button
 
                     val currentTimeInMillis = System.currentTimeMillis()
-                    val currentTimeInSeconds = (currentTimeInMillis / 1000).toInt()
+                    val currentTimeInSeconds = (currentTimeInMillis / 1000)
                     val newItem = SalesItem(
                         id = 0,
                         description = description,
                         price = price.toInt(),
                         sellerEmail = currentUserEmail,
-                        sellerPhone = "",
+                        sellerPhone = "88888888",
                         pictureUrl = "",
                         time = currentTimeInSeconds
                     )

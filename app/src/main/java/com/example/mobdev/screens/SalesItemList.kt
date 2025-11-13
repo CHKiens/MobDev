@@ -34,7 +34,7 @@ fun SalesItemList(
     onSalesItemsReload: () -> Unit = {},
     sortByPrice: (up: Boolean) -> Unit = {},
     sortByDescription: (up: Boolean) -> Unit = {},
-    filterByMaxPrice: (maxPrice: Double?) -> Unit = {},
+    filterByMaxPrice: (maxPrice: Int?) -> Unit = {},
     filterByDescription: (String) -> Unit = {},
     errorMessage: String = "",
     onAccountClick : () -> Unit = {},
@@ -90,7 +90,7 @@ private fun SalesItemListContent(
     onSalesItemSelected: (SalesItem) -> Unit,
     onSalesItemDeleted: (SalesItem) -> Unit,
     onSalesItemsReload: () -> Unit = {},
-    onFilterSalesItemsByMaxPrice: (Double) -> Unit,
+    onFilterSalesItemsByMaxPrice: (Int) -> Unit,
     onFilterSalesItemsByDescription: (String) -> Unit,
     sortByPrice: (up: Boolean) -> Unit,
     sortByDescription: (up: Boolean) -> Unit,
@@ -106,7 +106,6 @@ private fun SalesItemListContent(
         var sortDescAscending by remember { mutableStateOf(true) }
         var sortPriceAscending by remember { mutableStateOf(true) }
 
-        // Filters
         Column {
             TextField(
                 value = descFragment,
@@ -128,7 +127,6 @@ private fun SalesItemListContent(
             )
         }
 
-        // Sorting
         Row {
             OutlinedButton(onClick = {
                 sortByDescription(sortDescAscending)
@@ -148,7 +146,7 @@ private fun SalesItemListContent(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                 ),
                 onClick = {
-                    val max = maxPrice.toDoubleOrNull() ?: Double.MAX_VALUE
+                    val max = maxPrice.toIntOrNull() ?: Int.MAX_VALUE
                     onFilterSalesItemsByDescription(descFragment)
                     onFilterSalesItemsByMaxPrice(max)
                 }) {

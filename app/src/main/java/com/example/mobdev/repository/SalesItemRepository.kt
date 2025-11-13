@@ -130,7 +130,7 @@ class SalesItemRepository {
             getSalesItems()
             return
         }
-        val max = maxPrice.toDoubleOrNull()
+        val max = maxPrice.toIntOrNull()
         if (max != null) {
             salesItems.value = salesItems.value.filter { it.price <= max }
         }

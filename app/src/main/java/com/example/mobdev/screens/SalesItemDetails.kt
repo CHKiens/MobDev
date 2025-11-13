@@ -97,8 +97,7 @@ fun SalesItemDetails (
         }
     }
 }
-
-fun getDateTimeFromUnix(seconds: Int): String {
+fun getDateTimeFromUnix(seconds: Long): String {
     val sdf = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     val netDate = Date(seconds * 1000L)
     return sdf.format(netDate)

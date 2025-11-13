@@ -6,6 +6,6 @@ data class SalesItem(
     val price: Int = 0,
     val sellerEmail: String = "",
     val sellerPhone: String = "",
-    val time: Int = 0,
+    val time: Long = 0,
     val pictureUrl: String = ""
 )
