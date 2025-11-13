@@ -31,10 +31,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.LocalConfiguration
@@ -44,6 +46,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 fun SalesItemDetails (
     salesItem: SalesItem,
     modifier: Modifier = Modifier,
+    onSalesItemDeleted : (SalesItem) -> Unit = {},
+    currentUserEmail : String? = null,
     navigateBack : () -> Unit = {}
 ){
     val description = salesItem.description
@@ -94,6 +98,18 @@ fun SalesItemDetails (
             Text("Price: $price", style = MaterialTheme.typography.bodyLarge)
             Text("Seller Email: ${salesItem.sellerEmail}", style = MaterialTheme.typography.bodySmall)
             Text("Seller Phone: ${salesItem.sellerPhone}", style = MaterialTheme.typography.bodySmall)
+            if (salesItem.sellerEmail == currentUserEmail) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Remove ${salesItem.description}",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            onSalesItemDeleted(salesItem)
+                            navigateBack()
+                        }
+                )
+            }
         }
     }
 }

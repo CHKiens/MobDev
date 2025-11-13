@@ -84,7 +84,9 @@ fun MainScreen(
             val item = salesItems.find { it.id == id } ?: SalesItem(description = "Not found", price =  0)
             SalesItemDetails(
                 salesItem = item,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                currentUserEmail = currentUserEmail,
+                onSalesItemDeleted = { salesViewModel.delete(it) }
             )
         }
 

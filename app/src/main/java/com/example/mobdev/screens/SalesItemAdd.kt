@@ -7,10 +7,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mobdev.auth.AuthViewModel
 import com.example.mobdev.model.SalesItem
+import android.widget.Toast
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +27,7 @@ fun SalesItemAdd(
     var price by remember { mutableStateOf("") }
     var descError by remember { mutableStateOf(false) }
     var priceError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -96,8 +100,13 @@ fun SalesItemAdd(
                         pictureUrl = "",
                         time = currentTimeInSeconds
                     )
-                    addSalesItem(newItem)
-                    navigateBack()
+                    try {
+                        addSalesItem(newItem)
+                        Toast.makeText(context, "Item added successfully!", Toast.LENGTH_SHORT).show()
+                        navigateBack()
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Failed to add item: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)

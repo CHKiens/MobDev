@@ -2,6 +2,7 @@ package com.example.mobdev.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -12,16 +13,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.InspectableModifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -60,20 +65,43 @@ fun SalesItemList(
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                         actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-                    title = { Text("Sales Items") }
+                    title = { Text("Sales Items") },
+                    actions = {
+                        IconButton(onClick = onAccountClick, Modifier.padding(24.dp)) {
+                            Button(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.secondary
+                                ),
+                                shape = CircleShape,
+                                onClick = onAccountClick,
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.PersonOutline,
+                                    contentDescription = "Account",
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
+                        }
+                    }
                 )
             }
         },
-        floatingActionButtonPosition = if(!isLandscape) FabPosition.Center else FabPosition.End,
+        floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.size(80.dp),
-                shape = CircleShape,
-                onClick = onAccountClick,
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Filled.PersonOutline, contentDescription = "Account", modifier = Modifier.fillMaxSize())
+            if (isLandscape) {
+                FloatingActionButton(
+                    modifier = Modifier.size(80.dp),
+                    shape = CircleShape,
+                    onClick = onAccountClick,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Icon(Icons.Filled.PersonOutline,
+                        contentDescription = "Account",
+                        modifier = Modifier.fillMaxSize())
+                }
             }
         }
     ) { innerPadding ->
@@ -162,6 +190,7 @@ private fun SalesItemListContent(
             }) {
                 Text(if (sortPriceAscending) "Price ↑" else "Price ↓")
             }
+            Spacer(Modifier.weight(1f))
             Button(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,
@@ -192,6 +221,7 @@ private fun SalesItemListContent(
                     )
                 }
             }
+
         }
     }
 }
@@ -220,12 +250,13 @@ fun SalesItemCard(
             )
             Box(
                 Modifier
-                    .size(100.dp),
+                    .size(120.dp),
             ) {
                 Canvas(
                     modifier = Modifier
                         .padding(12.dp)
-                        .size(100.dp),
+                        .size(120.dp),
+
                     onDraw = {
                         drawRoundRect(brush, cornerRadius = CornerRadius(16f, 16f))
                     }
@@ -243,11 +274,12 @@ fun SalesItemCard(
             }
 
             if (salesItem.sellerEmail == currentUserEmail) {
+                Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Remove ${salesItem.description}",
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(36.dp)
                         .clickable { onSalesItemDeleted(salesItem) }
                 )
             }
