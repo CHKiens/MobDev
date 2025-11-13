@@ -1,8 +1,10 @@
 package com.example.mobdev.screens
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -14,13 +16,18 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.mobdev.model.SalesItem
+import com.example.mobdev.ui.theme.Blueish
+import com.example.mobdev.ui.theme.Yellowish
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,20 +45,26 @@ fun SalesItemList(
     filterByDescription: (String) -> Unit = {},
     errorMessage: String = "",
     onAccountClick : () -> Unit = {},
-) {
+)
+
+{
+    val orientation = LocalConfiguration.current.orientation
+    val isLandscape = orientation == Configuration.ORIENTATION_LANDSCAPE
     Scaffold(
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                title = { Text("Sales Items") }
-            )
+            if (!isLandscape) {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    title = { Text("Sales Items") }
+                )
+            }
         },
-        floatingActionButtonPosition = FabPosition.Center,
+        floatingActionButtonPosition = if(!isLandscape) FabPosition.Center else FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.size(80.dp),
@@ -101,10 +114,10 @@ private fun SalesItemListContent(
             Text(text = "Problem: $errorMessage", color = Color.Red)
         }
 
-        var descFragment by remember { mutableStateOf("") }
-        var maxPrice by remember { mutableStateOf("") }
-        var sortDescAscending by remember { mutableStateOf(true) }
-        var sortPriceAscending by remember { mutableStateOf(true) }
+        var descFragment by rememberSaveable { mutableStateOf("") }
+        var maxPrice by rememberSaveable { mutableStateOf("") }
+        var sortDescAscending by rememberSaveable { mutableStateOf(true) }
+        var sortPriceAscending by rememberSaveable { mutableStateOf(true) }
 
         Column {
             TextField(
@@ -128,14 +141,22 @@ private fun SalesItemListContent(
         }
 
         Row {
-            OutlinedButton(onClick = {
+            OutlinedButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
+                onClick = {
                 sortByDescription(sortDescAscending)
                 sortDescAscending = !sortDescAscending
             }) {
                 Text(if (sortDescAscending) "Description ↑" else "Description ↓")
             }
 
-            OutlinedButton(onClick = {
+            OutlinedButton(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
+                onClick = {
                 sortByPrice(sortPriceAscending)
                 sortPriceAscending = !sortPriceAscending
             }) {
@@ -191,13 +212,35 @@ fun SalesItemCard(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = "${salesItem.description}: ${salesItem.price}"
+            val brush = Brush.verticalGradient(
+                colors = listOf(Blueish, Yellowish)
             )
+            Box(
+                Modifier
+                    .size(100.dp),
+            ) {
+                Canvas(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .size(100.dp),
+                    onDraw = {
+                        drawRoundRect(brush, cornerRadius = CornerRadius(16f, 16f))
+                    }
+                )
+            }
+
+            Column(){
+                Text(
+                    text = salesItem.description
+                )
+                Text(
+                    text = "${salesItem.price} DKK",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             if (salesItem.sellerEmail == currentUserEmail) {
                 Icon(

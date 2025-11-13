@@ -36,8 +36,7 @@ fun UserScreen(
     val activity = context as Activity
     val currentUser by authViewModel.user.observeAsState()
     val errorMessage by authViewModel.errorMessage.observeAsState()
-
-    // Google Sign-In launcher
+    
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -110,7 +109,6 @@ fun UserScreen(
                         Text("Add Sales Item")
                     }
                 } ?: run {
-                    // Not logged in → show Google Sign-In button
                     Button(
                         onClick = { launcher.launch(googleSignInClient.signInIntent) },
                         modifier = Modifier.fillMaxWidth()
@@ -119,7 +117,6 @@ fun UserScreen(
                     }
                 }
 
-                // Show login errors as toast
                 LaunchedEffect(errorMessage) {
                     if (!errorMessage.isNullOrEmpty()) {
                         Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
