@@ -3,6 +3,7 @@ package com.example.mobdev.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -67,23 +68,21 @@ fun SalesItemList(
                     ),
                     title = { Text("Sales Items") },
                     actions = {
-                        IconButton(onClick = onAccountClick, Modifier.padding(24.dp)) {
-                            Button(
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.secondary
-                                ),
-                                shape = CircleShape,
-                                onClick = onAccountClick,
-                                modifier = Modifier.size(36.dp)
-                            ) {
-                                Icon(
-                                    Icons.Filled.PersonOutline,
-                                    contentDescription = "Account",
-                                    modifier = Modifier.fillMaxSize(),
-                                )
-                            }
+                        IconButton(
+                            onClick = onAccountClick,
+                            modifier = Modifier
+                                .padding(24.dp)
+                                .size(36.dp)
+                                .background(MaterialTheme.colorScheme.secondary, CircleShape)
+                        ) {
+                            Icon(
+                                Icons.Filled.PersonOutline,
+                                contentDescription = "Account",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
+
                     }
                 )
             }
