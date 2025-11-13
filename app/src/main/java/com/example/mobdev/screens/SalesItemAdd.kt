@@ -16,8 +16,8 @@ import android.widget.Toast
 import androidx.compose.runtime.saveable.rememberSaveable
 import java.net.URL
 
-fun isValidUrl(url: String): Boolean {
-    if (url.isBlank()) return true
+fun isValidUrl(url: String?): Boolean {
+    if (url.isNullOrBlank()) return false
     return try {
         URL(url).toURI()
         true

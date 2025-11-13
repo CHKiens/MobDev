@@ -40,6 +40,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.mobdev.model.SalesItem
 import com.example.mobdev.ui.theme.Blueish
 import com.example.mobdev.ui.theme.Yellowish
+import java.net.URL
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,7 +184,7 @@ private fun SalesItemListContent(
                 onClick = {
                 sortByDescription(sortDescAscending)
                 sortDescAscending = !sortDescAscending
-            }) {
+            }) { 
                 Text(if (sortDescAscending) "Description ↑" else "Description ↓")
             }
 
@@ -193,7 +195,7 @@ private fun SalesItemListContent(
                 onClick = {
                 sortByPrice(sortPriceAscending)
                 sortPriceAscending = !sortPriceAscending
-            }) {
+            }) { 
                 Text(if (sortPriceAscending) "Price ↑" else "Price ↓")
             }
             Spacer(Modifier.weight(1f))
@@ -201,7 +203,7 @@ private fun SalesItemListContent(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                 ),
-                onClick = {
+                onClick = { 
                     val max = maxPrice.toIntOrNull() ?: Int.MAX_VALUE
                     onFilterSalesItemsByDescription(descFragment)
                     onFilterSalesItemsByMaxPrice(max)
@@ -330,4 +332,3 @@ fun SalesItemCard(
         }
     }
 }
-

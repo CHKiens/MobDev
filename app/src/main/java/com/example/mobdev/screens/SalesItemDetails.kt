@@ -256,13 +256,3 @@ fun getDateTimeFromUnix(seconds: Long): String {
 }
 
 
-fun isValidUrl(url: String?): Boolean {
-    if (url.isNullOrBlank()) return false
-    return try {
-        URL(url)
-        true
-    } catch (e: Exception) {
-        false
-    }
-}
-
