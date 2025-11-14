@@ -158,7 +158,6 @@ fun SalesItemDetails (
                                 onSalesItemDeleted(salesItem)
                                 navigateBack()
                             },
-                            modifier = Modifier.padding(top = 16.dp),
                             colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error,
                                 contentColor = MaterialTheme.colorScheme.primary
